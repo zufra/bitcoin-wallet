@@ -31,36 +31,38 @@ async function getUTXO(address) {
   return utxo;
 }
 
-async function sendTx() {
-  const satoshisToSend = 1000;
-  const fee = 1000;
-  let totalAmount = 0;
-  let keyPair = bitcoin.ECPair.fromWIF(
-    "cVN8HhweU4obeakVQyRU1nJaKRvMPVPWAArGijGchc3DTkdsk5FK",
-    bitcoin.networks.testnet
-  );
+module.exports = {
+  sendTx: async function (
+    satoshisToSend,
+    fee,
+    senderAddress,
+    senderWIF,
+    recipientAddress
+  ) {
+    // const satoshisToSend = 1000;
+    // const fee = 1000;
+    let totalAmount = 0;
+    let keyPair = bitcoin.ECPair.fromWIF(senderWIF, bitcoin.networks.testnet);
 
-  const utxos = await getUTXO("mtdHT5LSbvw449zDGzvPD2eWrXPNmpfYge");
+    const utxos = await getUTXO(senderAddress);
 
-  let tx = new bitcoin.TransactionBuilder(bitcoin.networks.testnet);
-  utxos.forEach((utxo) => {
-    tx.addInput(utxo.txId, utxo.index);
-    totalAmount += utxo.value;
-  });
-  tx.addOutput("mqQHwpYeRnZdbZmzGaVDGiyFQmmafDMkmW", satoshisToSend);
-  tx.addOutput(
-    "mtdHT5LSbvw449zDGzvPD2eWrXPNmpfYge",
-    totalAmount - satoshisToSend - fee
-  );
+    let tx = new bitcoin.TransactionBuilder(bitcoin.networks.testnet);
+    utxos.forEach((utxo) => {
+      tx.addInput(utxo.txId, utxo.index);
+      totalAmount += utxo.value;
+    });
+    tx.addOutput(recipientAddress, satoshisToSend);
+    tx.addOutput(senderAddress, totalAmount - satoshisToSend - fee);
 
-  for (let i = 0; i < utxos.length; i++) {
-    tx.sign(i, keyPair);
-  }
+    for (let i = 0; i < utxos.length; i++) {
+      tx.sign(i, keyPair);
+    }
 
-  const body = tx.build().toHex();
-  // console.log(body);
+    const body = tx.build().toHex();
+    // console.log(body);
 
-  await axios.post("https://api.blockcypher.com/v1/btc/test3/txs/push", {
-    tx: body,
-  });
-}
+    await axios.post("https://api.blockcypher.com/v1/btc/test3/txs/push", {
+      tx: body,
+    });
+  },
+};

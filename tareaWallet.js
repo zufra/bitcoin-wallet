@@ -19,13 +19,16 @@ introText += "Para salir escriba 'exit'.\n";
 
 let mnemonic;
 let address;
-let app = true;
 
 const getMnemonicValue = () => {
   return new Promise((resolve, reject) => {
-    readline.question("Ingrese su mnemonic:", (userMnemonic) => {
-      if (userMnemonic) resolve(userMnemonic);
-    });
+    try {
+      readline.question("Ingrese su mnemonic:", (userMnemonic) => {
+        resolve(userMnemonic);
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 
@@ -47,20 +50,28 @@ const createAddress = (mnemonic) => {
 
 const getAddress = () => {
   return new Promise((resolve, reject) => {
-    readline.question("Ingrese su address:", (userAddress) => {
-      if (userAddress) resolve(userAddress);
-    });
+    try {
+      readline.question("Ingrese su address:", (userAddress) => {
+        resolve(userAddress);
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 
 const getDestinationAddress = () => {
   return new Promise((resolve, reject) => {
-    readline.question(
-      "Ingrese el address a la cual desea transferir BTC:",
-      (destAddress) => {
-        if (destAddress) resolve(destAddress);
-      }
-    );
+    try {
+      readline.question(
+        "Ingrese el address a la cual desea transferir BTC:",
+        (destAddress) => {
+          resolve(destAddress);
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 
@@ -81,7 +92,7 @@ const getTransactions = (address) => {
   return new Promise(async (resolve, reject) => {
     try {
       const result = await axios.get(
-        "https://api.blockcypher.com/v1/btc/main/addrs/" + address + "/full"
+        "https://api.blockcypher.com/v1/btc/test3/addrs/" + address + "/full"
       );
       resolve(result.data.txs);
     } catch (error) {
@@ -92,23 +103,43 @@ const getTransactions = (address) => {
 
 const getMontoSatoshis = () => {
   return new Promise((resolve, reject) => {
-    readline.question(
-      "Ingrese el monto de Satoshis que desea transferir:",
-      (monto) => {
-        if (monto) resolve(monto);
-      }
-    );
+    try {
+      readline.question(
+        "Ingrese el monto de Satoshis que desea transferir:",
+        (monto) => {
+          resolve(monto);
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 
 const getFee = () => {
   return new Promise((resolve, reject) => {
-    readline.question(
-      "Ingrese la fee que está dispuesto a pagar (en Satoshis):",
-      (fee) => {
-        if (fee) resolve(fee);
-      }
-    );
+    try {
+      readline.question(
+        "Ingrese la fee que está dispuesto a pagar (en Satoshis):",
+        (fee) => {
+          resolve(fee);
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const getSenderWIF = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      readline.question("Ingrese su WIF (Wallet Import Format):", (wif) => {
+        resolve(wif);
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 
@@ -171,6 +202,19 @@ const wallet = () => {
           break;
         case "5":
           //TO DO: Send btc a un address especificada usando sentTx
+          senderAddress = await getAddress();
+          recipientAddress = await getDestinationAddress();
+          satoshisToSend = parseInt(await getMontoSatoshis());
+          fee = parseInt(await getFee());
+          senderWIF = await getSenderWIF();
+          await sendTx.sendTx(
+            satoshisToSend,
+            fee,
+            senderAddress,
+            senderWIF,
+            recipientAddress
+          );
+          wallet();
           break;
         case "exit":
           readline.close();
