@@ -20,3 +20,7 @@ Luego seguir las instrucciones para realizar las distintas operaciones.
 #### Observación:
 
 Al intentar enviar BTCs con las credenciales anteriores se pudo transferir varias veces. Sin embargo, después de haber hecho cierto número de transferencias la API de blockcypher responde con un error HTTP 409 "Conflict" y ningún mensaje de error que ayude a entender la causa. Quizás se llegó a un máximo de transferencias en cierto intervalo de tiempo.
+
+A continuación se muestra un screenshot del balance de la cuenta con address *mtdHT5LSbvw449zDGzvPD2eWrXPNmpfYge* luego de transferir 1000 satoshis pagando un fee de 200.
+
+![Screenshot](balance.png)
