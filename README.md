@@ -15,3 +15,8 @@ Luego seguir las instrucciones para realizar las distintas operaciones.
 - Sender address: mtdHT5LSbvw449zDGzvPD2eWrXPNmpfYge
 - Sender WIF: cVN8HhweU4obeakVQyRU1nJaKRvMPVPWAArGijGchc3DTkdsk5FK (se usa el WIF en lugar de la private key para transferir BTCs)
 - Recipient address: mqQHwpYeRnZdbZmzGaVDGiyFQmmafDMkmW
+
+
+#### Observación:
+
+Al intentar enviar BTCs con las credenciales anteriores se pudo transferir varias veces. Sin embargo, después de haber hecho cierto número de transferencias la API de blockcypher responde con un error HTTP 409 "Conflict" y ningún mensaje de error que ayude a entender la causa. Quizás se llegó a un máximo de transferencias en cierto intervalo de tiempo.
